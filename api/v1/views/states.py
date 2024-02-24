@@ -47,7 +47,8 @@ def states_id(state_id):
             abort(404)
 
         obj.delete()
-        return {}, 200
+        storage.save()
+        return jsonify({}), 200
     elif request.method == 'PUT':
         data = request.get_json()
 
@@ -59,14 +60,15 @@ def states_id(state_id):
             abort(400, 'Not a JSON')
 
         state_dict = obj.to_dict()
-        attribute_list = ['id', 'created_at', 'updated_at']
+        print(state_dict)
+        protected_attrs = ['id', 'created_at', 'updated_at']
         for key, value in data.items():
-            if key not in attribute_list:
+            if key not in protected_attrs:
                 state_dict[key] = value
 
-        updated_state = State(**state_dict)
-        storage.new(updated_state)
-        storage.save()
+        print(state_dict)
+        obj.delete()
+        State(**state_dict).save()
         return jsonify(state_dict), 200
 
     else:
