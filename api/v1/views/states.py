@@ -16,37 +16,58 @@ def states():
         return jsonify(new_list), 200
     elif request.method == 'POST': # This checks for a POST method before running the necessary POST operation
         data = request.get_json() # This retrieves all the URL parameters
-        print(data)
-        print(type(data))
         if data is None:
-            abort(404, 'Not a JSON')
+            abort(400, 'Not a JSON')
 
         if 'name' not in data:
-            abort(404, 'Missing name')
+            abort(400, 'Missing name')
 
-        # ISSUE: The created state does not use the object data
-        new_state = State(data)
-        print(new_state.to_dict())
+        new_state = State(**data)
+        storage.new(new_state)
+        storage.save()
         return jsonify(new_state.to_dict()), 201
     else:
         abort(405)
 
-@app_views.route('/states/<state_id>', methods=['GET'])
-def get_states_id(state_id):
-    new_list = []
+@app_views.route('/states/<state_id>', methods=['GET', 'DELETE', 'PUT'])
+def states_id(state_id):
+    if request.method == 'GET':
+        new_list = []
 
-    obj = storage.get(State, state_id)
-    if obj is None:
-        abort(404)
+        obj = storage.get(State, state_id)
+        if obj is None:
+            abort(404)
 
-    new_list.append(obj.to_dict())
-    return jsonify(new_list)
+        new_list.append(obj.to_dict())
+        return jsonify(new_list)
 
-@app_views.route('/api/v1/states/<state_id>', methods=['DELETE'])
-def delete_state(state_id):
-    obj = storage.get(State, state_id)
-    if obj is None:
-        abort(404)
+    elif request.method == 'DELETE':
+        obj = storage.get(State, state_id)
+        if obj is None:
+            abort(404)
 
-    obj.delete()
-    return {}, 200
+        obj.delete()
+        return {}, 200
+    elif request.method == 'PUT':
+        data = request.get_json()
+
+        obj = storage.get(State, state_id)
+        if obj is None:
+            abort(404)
+
+        if data is None:
+            abort(400, 'Not a JSON')
+
+        state_dict = obj.to_dict()
+        attribute_list = ['id', 'created_at', 'updated_at']
+        for key, value in data.items():
+            if key not in attribute_list:
+                state_dict[key] = value
+
+        updated_state = State(**state_dict)
+        storage.new(updated_state)
+        storage.save()
+        return jsonify(state_dict), 200
+
+    else:
+        abort(405)
