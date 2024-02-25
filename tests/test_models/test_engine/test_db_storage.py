@@ -74,10 +74,6 @@ test_db_storage.py'])
 
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
-    def setUp(self):
-        self.mock_session = Mock()
-        models.storage._DBStorage__session = self.mock_session
-
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_all_returns_dict(self):
         """Test that all returns a dictionaty"""
