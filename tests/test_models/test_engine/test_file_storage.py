@@ -19,6 +19,7 @@ import os
 import pep8
 import unittest
 FileStorage = file_storage.FileStorage
+
 classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
 
@@ -113,3 +114,30 @@ class TestFileStorage(unittest.TestCase):
         with open("file.json", "r") as f:
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
+
+    def test_get(self):
+        """Test that get retrieves an obj"""
+        filestorage = FileStorage()
+        state_inst = State()
+        state_inst.name = "Florida"
+        filestorage.new(state_inst)
+        filestorage.save()
+        result1 = filestorage.get(State, state_inst.id)
+        result2 = filestorage.get(State, "state_inst_id")
+        self.assertEqual(result1, state_inst)
+        self.assertEqual(result2, None)
+
+    def test_count(self):
+        """Test that count returns a number"""
+        filestorage = FileStorage()
+        state_inst = State()
+        state_inst.name = "Florida"
+        city_inst = City()
+        city_inst.name = "Miami"
+        filestorage.new(state_inst)
+        filestorage.new(city_inst)
+        filestorage.save()
+        result1 = filestorage.count(State)
+        result2 = filestorage.count()
+        self.assertEqual(result1, 1)
+        self.assertEqual(result2, 2)

@@ -18,7 +18,11 @@ import json
 import os
 import pep8
 import unittest
+from unittest.mock import Mock
+
+# Needed to carry out tests for get and count methods
 DBStorage = db_storage.DBStorage
+
 classes = {"Amenity": Amenity, "City": City, "Place": Place,
            "Review": Review, "State": State, "User": User}
 
@@ -70,6 +74,10 @@ test_db_storage.py'])
 
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
+    def setUp(self):
+        self.mock_session = Mock()
+        models.storage._DBStorage__session = self.mock_session
+
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_all_returns_dict(self):
         """Test that all returns a dictionaty"""
@@ -83,6 +91,29 @@ class TestFileStorage(unittest.TestCase):
     def test_new(self):
         """test that new adds an object to the database"""
 
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
-    def test_save(self):
-        """Test that save properly saves objects to file.json"""
+    def test_get(self):
+        """Test that get retrieves an obj"""
+        dbstorage = DBStorage()
+        state_inst = State()
+        state_inst.name = "Florida"
+        dbstorage.new(state_inst)
+        dbstorage.save()
+        result1 = dbstorage.get(State, state_inst.id)
+        result2 = dbstorage.get(State, "state_inst_id")
+        self.assertEqual(result1, state_inst)
+        self.assertEqual(result2, None)
+
+    def test_count(self):
+        """Test that count returns a number"""
+        dbstorage = DBStorage()
+        state_inst = State()
+        state_inst.name = "Florida"
+        city_inst = City()
+        city_inst.name = "Miami"
+        dbstorage.new(state_inst)
+        dbstorage.new(city_inst)
+        dbstorage.save()
+        result1 = dbstorage.count(State)
+        result2 = dbstorage.count()
+        self.assertEqual(result1, 1)
+        self.assertEqual(result2, 2)
