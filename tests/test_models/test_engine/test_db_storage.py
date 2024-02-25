@@ -91,6 +91,7 @@ class TestFileStorage(unittest.TestCase):
     def test_new(self):
         """test that new adds an object to the database"""
 
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_get(self):
         """Test that get retrieves an obj"""
         dbstorage = DBStorage()
@@ -103,6 +104,7 @@ class TestFileStorage(unittest.TestCase):
         self.assertEqual(result1, state_inst)
         self.assertEqual(result2, None)
 
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_count(self):
         """Test that count returns a number"""
         dbstorage = DBStorage()
