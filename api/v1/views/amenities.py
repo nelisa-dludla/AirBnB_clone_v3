@@ -11,7 +11,7 @@ from models.amenity import Amenity
 
 
 @app_views.route(
-        '/amenities', methods['GET'], strict_slashes=False)
+        '/amenities', methods=['GET'], strict_slashes=False)
 def amenities():
     """retrieves list of all Amenity objects"""
     py_amenities = storage.all(Amenity)
@@ -22,7 +22,7 @@ def amenities():
         '/amenities/<amenity_id>', methods=['GET'], strict_slashes=False)
 def my_amenities(amenity_id):
     """retrieves Amenity objects """
-    amenity = storage.get("Amenity", amenity_id)
+    amenity = storage.get(Amenity, amenity_id)
     if not amenity:
         abort(404)
     return jsonify(amenity.to_dict())
@@ -33,7 +33,7 @@ def my_amenities(amenity_id):
 def del_amenity(amenity_id):
     """ deletes Amenity object; if ID not linked to any
     Amenity object, raises an error"""
-    amenity = storage.get("Amenity", amenity_id)
+    amenity = storage.get(Amenity, amenity_id)
     if not amenity:
         abort(404)
     amenity.delete()
@@ -44,7 +44,7 @@ def del_amenity(amenity_id):
 @app_views.route('/amenities', methods=['POST'], strict_slashes=False)
 def post_amenity():
     """creates Amenity object"""
-    new_amenit = request.get_json()
+    new_amenity = request.get_json()
     if not new_amenity:
         abort(400, "Not a JSON")
     if "name" not in new_amenity:
@@ -60,7 +60,7 @@ def post_amenity():
 def put_amenity(amenity_id):
     """updates Amenity object, if id not linked
     to any amenities,raises an error"""
-    amenity = storage.get("Amenity", amenity_id)
+    amenity = storage.get(Amenity, amenity_id)
     if not amenity:
         abort(404)
     request_amenity = request.get_json()
@@ -70,4 +70,4 @@ def put_amenity(amenity_id):
         if i != "id" and i != "created_at" and i != "updated_at":
             setattr(amenity, i, j)
     storage.save()
-    return make_response(jsonify(amenity.to_dict()), 201)
+    return make_response(jsonify(amenity.to_dict()), 200)

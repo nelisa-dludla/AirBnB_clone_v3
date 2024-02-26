@@ -7,10 +7,10 @@ handles all default RESTFul API actions
 from models import storage
 from flask import make_response, request, abort, jsonify
 from api.v1.views import app_views
-from models.users import User
+from models.user import User
 
 
-@app_views.route('/users', methods['GET'], strict_slashes=False)
+@app_views.route('/users', methods=['GET'], strict_slashes=False)
 def users():
     """retrieves list of all User objects"""
     py_user = storage.all(User)
@@ -21,7 +21,7 @@ def users():
         '/users/<user_id>', methods=['GET'], strict_slashes=False)
 def my_user(user_id):
     """retrieves User objects """
-    user = storage.get("User",  user_id)
+    user = storage.get(User, user_id)
     if not user:
         abort(404)
     return jsonify(user.to_dict())
@@ -32,7 +32,7 @@ def my_user(user_id):
 def del_user(user_id):
     """ deletes User object; if ID not linked to any
     user object, raises an error"""
-    user = storage.get("User", user_id)
+    user = storage.get(User, user_id)
     if not user:
         abort(404)
     user.delete()
@@ -61,7 +61,7 @@ def post_user():
 def put_user(user_id):
     """updates User object, if id not linked to any  users,
     raises an error"""
-    user = storage.get("User", user_id)
+    user = storage.get(User, user_id)
     if not user:
         abort(404)
     request_user = request.get_json()

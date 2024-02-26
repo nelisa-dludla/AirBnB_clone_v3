@@ -15,7 +15,7 @@ from models.city import City
         '/states/<state_id>/cities', methods=['GET'], strict_slashes=False)
 def cities(state_id):
     """retrieves City objects of a State"""
-    state = storage.get("State", state_id)
+    state = storage.get(State, state_id)
     if not state:
         abort(404)
     return jsonify([city.to_dict() for city in state.cities])
@@ -26,7 +26,7 @@ def cities(state_id):
 def my_city(city_id):
     """Retrieves a City object, if not linked to any city
     raises an error"""
-    city = storage.get("City", city_id)
+    city = storage.get(City, city_id)
     if not city:
         abort(404)
     return jsonify(city.to_dict())
@@ -37,7 +37,7 @@ def my_city(city_id):
 def del_city(city_id):
     """ deletes city object; if not linked to any
     city, raises an error"""
-    city = storage.get("City", city_id)
+    city = storage.get(City, city_id)
     if not city:
         abort(404)
     city.delete()
@@ -49,7 +49,7 @@ def del_city(city_id):
         '/states/<state_id>/cities', methods=['POST'], strict_slashes=False)
 def post_city(state_id):
     """creates a city object"""
-    state = storage.get("State", state_id)
+    state = storage.get(State, state_id)
     if not state:
         abort(404)
     new_city = request.get_json()
@@ -69,7 +69,7 @@ def post_city(state_id):
 def put_city(city_id):
     """updates city object, if id not linked to any city,
     raises an error"""
-    city = storage.get("City", city_id)
+    city = storage.get(City, city_id)
     if not city:
         abort(404)
     request_city = request.get_json()
@@ -79,4 +79,4 @@ def put_city(city_id):
         if i not in ["id", "state_id", "created_at", "updated_at"]:
             setattr(city, i, j)
     storage.save()
-    return make_response(jsonify(city.to_dict()), 201)
+    return make_response(jsonify(city.to_dict()), 200)

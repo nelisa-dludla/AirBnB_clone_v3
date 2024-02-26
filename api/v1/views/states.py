@@ -67,25 +67,17 @@ def states_id(state_id):
         return make_response(jsonify({}), 200)
 
     elif request.method == 'PUT':
-        data = request.get_json()
-
-        obj = storage.get(State, state_id)
-        if obj is None:
-            abort(404)
-        if data is None:
+        request_state = request.get_json()
+        if request_state is None:
             abort(400, 'Not a JSON')
+        state = storage.get(State, state_id)
+        if state is None:
+            abort(404)
 
-        state_dict = obj.to_dict()
-        print(state_dict)
-        protected_attrs = ['id', 'created_at', 'updated_at']
-        for key, value in data.items():
-            if key not in protected_attrs:
-                state_dict[key] = value
-
-        print(state_dict)
-        obj.delete()
-        State(**state_dict).save()
-        return make_response(jsonify(state_dict), 200)
-
+        for i, j in request_state.items():
+            if i not in ["id", "state_id", "created_at", "updated_at"]:
+                setattr(state, i, j)
+        storage.save()
+        return make_response(jsonify(state.to_dict()), 200)
     else:
         abort(405)
