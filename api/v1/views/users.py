@@ -7,10 +7,10 @@ handles all default RESTFul API actions
 from models import storage
 from flask import make_response, request, abort, jsonify
 from api.v1.views import app_views
-from models.users import User
+from models.user import User
 
 
-@app_views.route('/users', methods['GET'], strict_slashes=False)
+@app_views.route('/users', methods=['GET'], strict_slashes=False)
 def users():
     """retrieves list of all User objects"""
     py_user = storage.all(User)
