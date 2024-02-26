@@ -9,20 +9,23 @@ from flask import jsonify, abort, request, make_response
 from models import storage
 from models.state import State
 
+
 # This route handles GET and POST requests for States
 @app_views.route('/states', methods=['GET', 'POST'], strict_slashes=False)
 def states():
     """ Handles GET and POST methods for /states"""
-    if request.method == 'GET': # This checks for a GET method before running the necessary GET operation
-        new_list = [] # This list will store all retrieved objects
+
+    if request.method == 'GET':
+        new_list = []  # This list will store all retrieved objects
         objs = storage.all(State)
 
         for _, value in objs.items():
             new_list.append(value.to_dict())
 
         return make_response(jsonify(new_list), 200)
-    elif request.method == 'POST': # This checks for a POST method before running the necessary POST operation
-        data = request.get_json() # This retrieves all the URL parameters
+
+    elif request.method == 'POST':
+        data = request.get_json()  # This retrieves all the URL parameters
         if data is None:
             abort(400, 'Not a JSON')
 
@@ -35,8 +38,11 @@ def states():
         return make_response(jsonify(new_state.to_dict()), 201)
     else:
         abort(405)
-# Below I have created one function to handle GET, DELETE and PUT methods
-@app_views.route('/states/<state_id>', methods=['GET', 'DELETE', 'PUT'], strict_slashes=False)
+
+
+@app_views.route(
+        '/states/<state_id>', methods=['GET', 'DELETE', 'PUT'],
+        strict_slashes=False)
 def states_id(state_id):
     """
     Handles GET, DELETE, PUT methods for /states/<state_id>
