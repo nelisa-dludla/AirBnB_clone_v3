@@ -17,13 +17,13 @@ cors = CORS(app, resources={r"/*":{"origins":"0.0.0.0"}})
 
 @app.errorhandler(404)
 def not_found(err):
-    return make_response(jsonify{"error": "Not found"}), 404)
+    return make_response(jsonify({"error": "Not found"}), 404)
 
 app.config["SWAGGER"] = {
         'title': 'AirBnB clone REstful API',
         'uiversion': 3
         }
-        Swagger(app)
+Swagger(app)
 
 
 @app.teardown_appcontext
