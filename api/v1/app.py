@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""This is the main flask app"""
 
 from flask import Flask, jsonify, make_response, render_template
 from models import storage
@@ -14,11 +15,13 @@ cors = CORS(app, resources={r"/*": {"origins": "0.0.0.0"}})
 
 @app.errorhandler(404)
 def not_found(err):
+    """Handles 404 errors"""
     return make_response(jsonify({"error": "Not found"}), 404)
 
 
 @app.teardown_appcontext
 def close_db(error):
+    """Handles app teardown"""
     storage.close()
 
 
